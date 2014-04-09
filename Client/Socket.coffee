@@ -6,6 +6,7 @@ net = require 'net'
 config = require '../config'
 Encoding = require '../Habbo/Encoding'
 ServerMessage = require '../Habbo/ServerMessage'
+Habbo = require '../Habbo/Users/Habbo'
 
 module.exports = class SocketClient
     socket: null,
@@ -14,6 +15,10 @@ module.exports = class SocketClient
 
     login: ->
         debug.socket 'connecting with server: %s:%d', config.host, config.port
+
+        @user = new Habbo
+            username: config.user.username
+        @messenger = @user.get 'messenger'
 
         @socket = net.connect config.port, config.host, @onConnect
         @socket.on 'data', @onData
@@ -51,7 +56,7 @@ module.exports = class SocketClient
             data.skip 5
             count = data.readInt()
             for i in [0...count]
-                buddies.push
+                buddies.push new Habbo
                     userid: data.readInt()
                     username: data.readString()
                     online: data.skip().readInt()
@@ -60,5 +65,5 @@ module.exports = class SocketClient
                     motto: data.skip().readString()
                     lastOnline: data.readString()
                 data.skip 2 # final char codes
-            # @messenger.add buddies
-            debug.socket 'buddies loaded: %d', count
+            @messenger.add buddies
+            debug.socket 'buddies loaded: %d', @messenger.length
