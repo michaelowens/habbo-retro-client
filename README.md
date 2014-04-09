@@ -8,4 +8,6 @@ Node.js client for habbo retro hotels running revision 63. Currently only tested
 
 1. Clone repository
 2. `npm install`
-3. `coffee app.coffee`
+3. `npm start`
+
+![Preview](http://i.imgur.com/bPKsLQE.png)
