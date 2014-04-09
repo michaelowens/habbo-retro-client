@@ -1,5 +1,7 @@
 # Habbo retro client
 
+[![Dependency Status](https://gemnasium.com/michaelowens/habbo-retro-client.svg)](https://gemnasium.com/michaelowens/habbo-retro-client)
+
 Node.js client for habbo retro hotels running revision 63. Currently only tested on Holo ([holohotel.us](http://www.holohotel.us))
 
 ## Set up
