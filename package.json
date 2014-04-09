@@ -1,0 +1,32 @@
+{
+  "name": "habbo-retro-client",
+  "version": "0.0.1",
+  "description": "Node.js client for habbo retro hotels running revision 63.",
+  "main": "app.coffee",
+  "scripts": {
+    "start": "DEBUG=* coffee app.coffee",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/michaelowens/habbo-retro-client.git"
+  },
+  "keywords": [
+    "habbo",
+    "retro",
+    "r63",
+    "client"
+  ],
+  "author": "Michael Owens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michaelowens/habbo-retro-client/issues"
+  },
+  "homepage": "https://github.com/michaelowens/habbo-retro-client",
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "backbone": "^1.1.2",
+    "request": "^2.34.0",
+    "debug": "^0.8.0"
+  }
+}

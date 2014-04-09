@@ -1,0 +1,9 @@
+# Habbo retro client
+
+Node.js client for habbo retro hotels running revision 63. Currently only tested on Holo ([holohotel.us](http://www.holohotel.us))
+
+## Set up
+
+1. Clone repository
+2. `npm install`
+3. `coffee app.coffee`

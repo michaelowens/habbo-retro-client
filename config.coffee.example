@@ -1,0 +1,9 @@
+module.exports =
+    user:
+        username: ''
+        password: ''
+        token: null
+
+    url: 'http://www.holohotel.us/'
+    host: 'holohotel.us'
+    port: 30000
