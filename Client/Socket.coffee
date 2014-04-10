@@ -1,5 +1,5 @@
 debug =
-    socket: require('debug')('client:socket')
+    client: require('debug')('client:socket')
     incoming: require('debug')('client:socket:incoming')
     outgoing: require('debug')('client:socket:outgoing')
 net = require 'net'
@@ -7,20 +7,39 @@ config = require '../config'
 Encoding = require '../Habbo/Encoding'
 ServerMessage = require '../Habbo/ServerMessage'
 Habbo = require '../Habbo/Users/Habbo'
+Events = require './Events'
 
 module.exports = class SocketClient
-    socket: null,
-    user: null,
-    messenger: null,
+    socket: null
+    user: null
+    messenger: null
+    modules: {}
+    plugins: {}
+    modulePaths: ['../Habbo/Login']
 
-    login: ->
-        debug.socket 'connecting with server: %s:%d', config.host, config.port
+    constructor: ->
+        debug.client 'Loading modules'
+        @loadModules()
+
+        debug.client 'Loading plugins (not really)'
+        @loadPlugins()
+
+    loadModules: ->
+        for path in @modulePaths
+            [parts, ..., name] = path.split '/'
+            @modules[name] = new (require path)(this)
+
+    # todo: build this
+    loadPlugins: ->
+
+    connect: ->
+        debug.client 'connecting with server: %s:%d', config.hotel.host, config.hotel.port
 
         @user = new Habbo
             username: config.user.username
         @messenger = @user.get 'messenger'
 
-        @socket = net.connect config.port, config.host, @onConnect
+        @socket = net.connect config.hotel.port, config.hotel.host, @onConnect
         @socket.on 'data', @onData
         @socket.on 'end', @onDisconnect
 
@@ -31,20 +50,20 @@ module.exports = class SocketClient
 
     # Callbacks
     onConnect: =>
-        debug.socket 'client connected'
-        @send 'F_' + Encoding.Base64.encode(config.user.token.length) + config.user.token
+        debug.client 'client connected'
+        Events.emit 'client:socket:connected'
 
     onDisconnect: =>
-        debug.socket 'client disconnected'
+        debug.client 'client disconnected'
 
     onData: (buffer) =>
         data = new ServerMessage buffer.toString()
         debug.incoming data.packet,
             header: data.header
 
-        if data.header is 3
-            debug.socket 'authentication successful'
-            @send Encoding.Base64.encode 12
+        # if data.header is 3
+        #     debug.client 'authentication successful'
+        #     @send Encoding.Base64.encode 12
 
         # ping - pong
         if data.header is 50
@@ -66,4 +85,4 @@ module.exports = class SocketClient
                     lastOnline: data.readString()
                 data.skip 2 # final char codes
             @messenger.add buddies
-            debug.socket 'buddies loaded: %d', @messenger.length
+            debug.client 'buddies loaded: %d', @messenger.length
