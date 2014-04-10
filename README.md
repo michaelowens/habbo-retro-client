@@ -11,3 +11,7 @@ Node.js client for habbo retro hotels running revision 63. Currently only tested
 3. `npm start`
 
 ![Preview](http://i.imgur.com/bPKsLQE.png)
+
+## Proxy
+
+If you need to log packets between the normal client and server you can run `sh proxy.sh`.
