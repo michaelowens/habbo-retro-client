@@ -1,0 +1,1 @@
+DEBUG=* coffee app_proxy.coffee

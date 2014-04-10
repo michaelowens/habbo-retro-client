@@ -5,8 +5,12 @@ Habbo = require '../../Habbo/Users/Habbo'
 
 module.exports = class Messenger
     constructor: (@client) ->
+        Events.on 'packet:header-3', @onLogin
         Events.on 'packet:header-12', @onFriendsList
         Events.on 'packet:header-134', @onMessage
+
+    onLogin: =>
+        @client.send Encoding.Base64.encode 12 # request friends
 
     onFriendsList: (data) =>
         buddies = []
@@ -30,3 +34,10 @@ module.exports = class Messenger
         message = data.readString()
 
         debug 'Received message', user.get('username') + ':', message
+
+        # @@J@aYRG@Chey
+
+        # header 33
+        useridb64 = Encoding.Wire.encode user.get 'userid'
+        msglengthb64 = Encoding.Base64.encode message.length
+        @client.send '@a' + useridb64 + msglengthb64 + message

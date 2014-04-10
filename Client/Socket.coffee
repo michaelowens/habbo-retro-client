@@ -6,7 +6,6 @@ net = require 'net'
 config = require '../config'
 Encoding = require '../Habbo/Encoding'
 ServerMessage = require '../Habbo/ServerMessage'
-Habbo = require '../Habbo/Users/Habbo'
 Events = require './Events'
 
 module.exports = class SocketClient
@@ -32,10 +31,6 @@ module.exports = class SocketClient
 
     connect: ->
         debug.client 'connecting with server: %s:%d', config.hotel.host, config.hotel.port
-
-        @user = new Habbo
-            username: config.user.username
-        @messenger = @user.get 'messenger'
 
         @socket = net.connect config.hotel.port, config.hotel.host, @onConnect
         @socket.on 'data', @onData

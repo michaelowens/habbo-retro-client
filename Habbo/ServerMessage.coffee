@@ -16,10 +16,13 @@ module.exports = class ServerMessage
     reset: ->
         @pointer = 0
 
-    skip: (n = 1) ->
+    skip: (n = 1, isString = false) ->
         n = 1 unless n > 1
         while n--
-            @readInt()
+            if isString
+                @readString()
+            else
+                @readInt()
         this
 
     readInt: ->
