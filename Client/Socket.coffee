@@ -15,7 +15,6 @@ module.exports = class SocketClient
     messenger: null
     modules: {}
     plugins: {}
-    modulePaths: ['../Habbo/Login']
 
     constructor: ->
         debug.client 'Loading modules'
@@ -25,9 +24,8 @@ module.exports = class SocketClient
         @loadPlugins()
 
     loadModules: ->
-        for path in @modulePaths
-            [parts, ..., name] = path.split '/'
-            @modules[name] = new (require path)(this)
+        for name in config.modules
+            @modules[name] = new (require './modules/' + name)(this)
 
     # todo: build this
     loadPlugins: ->
@@ -58,31 +56,5 @@ module.exports = class SocketClient
 
     onData: (buffer) =>
         data = new ServerMessage buffer.toString()
-        debug.incoming data.packet,
-            header: data.header
-
-        # if data.header is 3
-        #     debug.client 'authentication successful'
-        #     @send Encoding.Base64.encode 12
-
-        # ping - pong
-        if data.header is 50
-            @send Encoding.Base64.encode 196
-
-        # friends
-        if data.header is 12
-            buddies = []
-            data.skip 5
-            count = data.readInt()
-            for i in [0...count]
-                buddies.push new Habbo
-                    userid: data.readInt()
-                    username: data.readString()
-                    online: data.skip().readInt()
-                    inRoom: data.readInt()
-                    figure: data.readString()
-                    motto: data.skip().readString()
-                    lastOnline: data.readString()
-                data.skip 2 # final char codes
-            @messenger.add buddies
-            debug.client 'buddies loaded: %d', @messenger.length
+        debug.incoming data.header, data.packet
+        Events.emit 'packet:header-' + data.header, data

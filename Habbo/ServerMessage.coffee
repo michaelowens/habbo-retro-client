@@ -12,8 +12,6 @@ module.exports = class ServerMessage
     constructor: (@packet) ->
         @header = Encoding.Base64.decode @packet[0...2]
         @msg = @packet.substr 2
-        debug 'Emit: packet:header-' + @header
-        Events.emit 'packet:header-' + @header
 
     reset: ->
         @pointer = 0

@@ -4,6 +4,10 @@ module.exports =
         password: ''
         token: null
 
-    url: 'http://www.holohotel.us/'
-    host: 'holohotel.us'
-    port: 30000
+    hotel:
+        url: 'http://www.holohotel.us/'
+        host: 'holohotel.us'
+        port: 30000
+
+    plugins: ['test']
+    modules: ['Core', 'Login', 'Messenger']
