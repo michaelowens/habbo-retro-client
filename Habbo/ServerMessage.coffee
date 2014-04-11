@@ -1,7 +1,6 @@
-debug = require('debug')('ServerMessage')
 Encoding = require './Encoding'
-# {EventEmitter} = require 'events'
 Events = require '../Client/Events'
+GUI = require '../Client/GUI'
 
 module.exports = class ServerMessage
     packet: ''

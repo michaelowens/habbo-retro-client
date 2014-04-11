@@ -1,8 +1,8 @@
 config = require '../../config'
-debug = require('debug')('module:login')
 Events = require '../Events'
 Encoding = require '../../Habbo/Encoding'
 Habbo = require '../../Habbo/Users/Habbo'
+GUI = require '../GUI'
 
 module.exports = class Login
     constructor: (@client) ->
@@ -11,11 +11,13 @@ module.exports = class Login
         Events.on 'packet:header-5', @onCredentials
 
     onConnected: =>
-        debug 'Connected!'
+        # debug 'Connected!'
+        GUI.appendLine 'connected!'
         @client.send 'F_' + Encoding.Base64.encode(config.user.token.length) + config.user.token
 
     onLogin: =>
-        debug 'Logged in!'
+        # debug 'Logged in!'
+        GUI.appendLine 'logged in!'
         @client.send Encoding.Base64.encode 7 # own credentials
 
     onCredentials: (data) =>

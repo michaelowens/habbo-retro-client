@@ -1,7 +1,7 @@
-debug = require('debug')('module:messenger')
 Events = require '../Events'
 Encoding = require '../../Habbo/Encoding'
 Habbo = require '../../Habbo/Users/Habbo'
+GUI = require '../GUI'
 
 module.exports = class Messenger
     constructor: (@client) ->
@@ -27,13 +27,15 @@ module.exports = class Messenger
                 lastOnline: data.readString()
             data.skip 2 # final char codes
         @client.messenger.add buddies
-        debug 'buddies loaded: %d', @client.messenger.length
+        # debug 'buddies loaded: %d', @client.messenger.length
+        GUI.appendLine 'buddies loaded: ' + @client.messenger.length
 
     onMessage: (data) =>
         user = @client.messenger.findWhere userid: data.readInt()
         message = data.readString()
 
-        debug 'Received message', user.get('username') + ':', message
+        # debug 'Received message', user.get('username') + ':', message
+        GUI.appendLine 'received message: ' + user.get('username') + ': ' + message
 
         # @@J@aYRG@Chey
 
