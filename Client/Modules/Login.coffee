@@ -7,8 +7,8 @@ GUI = require '../GUI'
 module.exports = class Login
     constructor: (@client) ->
         Events.on 'client:socket:connected', @onConnected
-        Events.on 'packet:header-3', @onLogin
-        Events.on 'packet:header-5', @onCredentials
+        Events.on 'packet:header:3', @onLogin
+        Events.on 'packet:header:5', @onCredentials
 
     onConnected: =>
         # debug 'Connected!'

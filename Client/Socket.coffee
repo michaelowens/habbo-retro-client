@@ -43,7 +43,7 @@ module.exports = class SocketClient
     send: (data) ->
         data = '@' + Encoding.Base64.encode(data) + data
         # debug.outgoing [data]
-        GUI.appendLine data
+        GUI.appendLine '[outgoing] ' + data
         @socket.write data
 
     # Callbacks
@@ -59,5 +59,5 @@ module.exports = class SocketClient
     onData: (buffer) =>
         data = new ServerMessage buffer.toString()
         # debug.incoming data.header, data.packet
-        GUI.appendLine 'incoming: header-' + data.header
-        Events.emit 'packet:header-' + data.header, data
+        GUI.appendLine 'incoming: header ' + data.header
+        Events.emit 'packet:header:' + data.header, data

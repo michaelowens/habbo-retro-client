@@ -2,12 +2,18 @@ Events = require '../Events'
 Encoding = require '../../Habbo/Encoding'
 Habbo = require '../../Habbo/Users/Habbo'
 GUI = require '../GUI'
+Input = require '../Input'
 
 module.exports = class Messenger
+    lastUser: null
+
     constructor: (@client) ->
-        Events.on 'packet:header-3', @onLogin
-        Events.on 'packet:header-12', @onFriendsList
-        Events.on 'packet:header-134', @onMessage
+        Events.on 'packet:header:3', @onLogin
+        Events.on 'packet:header:12', @onFriendsList
+        Events.on 'packet:header:134', @onMessage
+        Events.on 'input:command:reply', @onReply
+        Events.on 'input:command:r', @onReply
+        Events.on 'input:command:msg', @onMsg
 
     onLogin: =>
         @client.send Encoding.Base64.encode 12 # request friends
@@ -27,19 +33,25 @@ module.exports = class Messenger
                 lastOnline: data.readString()
             data.skip 2 # final char codes
         @client.messenger.add buddies
-        # debug 'buddies loaded: %d', @client.messenger.length
         GUI.appendLine 'buddies loaded: ' + @client.messenger.length
 
     onMessage: (data) =>
-        user = @client.messenger.findWhere userid: data.readInt()
+        @lastUser = @client.messenger.findWhere userid: data.readInt()
         message = data.readString()
+        GUI.appendLine '[' + @lastUser.get('username') + '] ' + message
 
-        # debug 'Received message', user.get('username') + ':', message
-        GUI.appendLine 'received message: ' + user.get('username') + ': ' + message
-
-        # @@J@aYRG@Chey
-
-        # header 33
+    send: (user, message) ->
+        return GUI.appendLine 'No user to send a message to' if not user
+        return GUI.appendLine 'No message to send' if not message
         useridb64 = Encoding.Wire.encode user.get 'userid'
         msglengthb64 = Encoding.Base64.encode message.length
         @client.send '@a' + useridb64 + msglengthb64 + message
+
+    onReply: (msg) =>
+        return GUI.appendLine 'No user to reply to' if not @lastUser or not msg
+        @send @lastUser, msg
+
+    onMsg: (msg) =>
+        [username, msg] = Input.splitCommand msg
+        user = @client.messenger.findWhere username: username
+        @send user, msg

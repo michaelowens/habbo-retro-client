@@ -40,6 +40,11 @@ module.exports = class GUI
         @win.cursor cury, curx
         @win.refresh()
 
+    @appendGroupedLine = (messages) ->
+        return if typeof messages isnt 'object'
+        pointer = 0
+
+
     @updateHeader = (header, style, clear = true, posy = 0, posx = 0) ->
         {cury, curx} = @win
         style = style || {}
