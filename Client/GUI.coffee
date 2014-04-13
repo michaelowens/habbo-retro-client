@@ -1,5 +1,5 @@
 nc = require 'ncurses'
-widgets = require 'ncurses/lib/widgets'
+Input = require './Input'
 
 module.exports = class GUI
     @headers: {}
@@ -22,45 +22,7 @@ module.exports = class GUI
         @win.refresh()
         @win.inbuffer = ''
 
-        @win.on 'inputChar', (c, i) =>
-            {cury, curx} = @win
-            if i is nc.keys.LEFT and curx > 0
-                @win.cursor @win.height - 1, curx - 1
-            else if i is nc.keys.RIGHT and curx < @win.inbuffer.length
-                @win.cursor @win.height - 1, curx + 1
-            else if i is nc.keys.NEWLINE and @win.inbuffer
-                return if not @win.inbuffer.length
-                command = @win.inbuffer
-
-                customColor = @colors.custom if nc.hasColors
-                @appendLine command, customColor
-
-                @headers.status.msg = 'Status: running'
-
-                if command is 'status'
-                    widgets.MessageBox 'Everything is probably broken because of this'
-
-                @win.inbuffer = ''
-                @win.cursor @win.height - 1, 0
-                @win.clrtoeol()
-            else if (i is nc.keys.BACKSPACE or i is 127) and curx > 0 # nc.keys.BACKSPACE = 263, mac gives 127 ??
-                @win.inbuffer = @win.inbuffer.substring(0, curx - 1) + @win.inbuffer.substring(curx)
-                @win.delch @win.height - 1, curx - 1
-            else if i is nc.keys.DEL and curx < @win.inbuffer.length
-                @win.inbuffer = @win.inbuffer.substring(0, curx) + @win.inbuffer.substring(curx + 1)
-                @win.delch @win.height - 1, curx
-            else if i >= 32 and i <= 126 and curx < @win.width-1
-                @win.inbuffer = @win.inbuffer.slice(0, curx) + c + @win.inbuffer.slice(curx)
-                if curx < @win.inbuffer.length
-                    @win.insch i
-                    @win.cursor @win.height - 1, curx + 1
-                else
-                    @win.addch i
-
-            @headers.status.msg = 'Status: typing' if @win.inbuffer
-
-            # setHeaders i + ' === ' + nc.keys.DEL
-            @win.refresh()
+        @win.on 'inputChar', Input.onInput
 
     @draw: ->
         @win.refresh()

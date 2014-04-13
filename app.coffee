@@ -1,5 +1,6 @@
 WebClient = require './Client/Web'
 SocketClient = require './Client/Socket'
+Input = require './Client/Input'
 GUI = require './Client/GUI'
 
 logo = """ _    _  ____  _      ____
@@ -53,6 +54,9 @@ looper()
 
 webClient = new WebClient
 socketClient = new SocketClient
+
+Input.setGUI GUI
+Input.setClient socketClient
 
 webClient.login ->
     socketClient.connect()
