@@ -59,5 +59,5 @@ module.exports = class SocketClient
     onData: (buffer) =>
         data = new ServerMessage buffer.toString()
         # debug.incoming data.header, data.packet
-        GUI.appendLine 'incoming: header ' + data.header
+        GUI.appendLine 'incoming: header ' + data.header + ' || data: ' + data.msg
         Events.emit 'packet:header:' + data.header, data
