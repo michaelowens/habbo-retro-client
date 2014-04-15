@@ -1,6 +1,6 @@
 module.exports = Encoding =
     ###
-    Base64 encoding (for legacy packets?)
+    Base64 encoding
     ###
     Base64:
         encode: (value, length = 2) ->
@@ -11,7 +11,7 @@ module.exports = Encoding =
             for x in [1..length]
                 offset = 6 * (length - x)
                 val = 64 + (value >> offset & 0x3f)
-                stack += String.fromCharCode(val)
+                stack += String.fromCharCode val
 
             return stack;
 
@@ -27,7 +27,7 @@ module.exports = Encoding =
             for x in [(val.length - 1)..0]
                 tmp = val[x] - 64
                 if y > 0
-                    tmp *= (Math.pow(64, y))
+                    tmp *= Math.pow 64, y
 
                 result += tmp
                 y++
