@@ -6,3 +6,4 @@ config.coffee
 
 client.html
 memory.txt
+log/
