@@ -2,6 +2,24 @@ nc = require 'ncurses'
 Input = require './Input'
 fs = require 'fs'
 
+Date.prototype.monthNames = [
+    "January", "February", "March",
+    "April", "May", "June",
+    "July", "August", "September",
+    "October", "November", "December"
+];
+
+Date.prototype.getMonthName = -> this.monthNames[this.getMonth()]
+Date.prototype.getShortMonthName = -> this.getMonthName().substr 0, 3
+
+saveAndExit = -> GUI.saveBuffer true
+
+process.on 'uncaughtException', (err) ->
+    GUI.outputBuffer.push err.stack
+    saveAndExit true
+process.on 'SIGTERM', saveAndExit
+process.on 'SIGINT', saveAndExit
+
 module.exports = class GUI
     @outputBuffer: []
     @savingBuffer: false
@@ -11,6 +29,13 @@ module.exports = class GUI
 
     fs.mkdirSync 'log' if not fs.existsSync 'log'
     fs.openSync @outputFileName, 'w' if not fs.existsSync @outputFileName
+
+    # @logStream: fs.createWriteStream @outputFileName, flags: 'a'
+
+    # process.stdout.pipe @logStream
+    # process.stderr.pipe @logStream
+
+    console.log 'ready'
 
     @colors: [1..7]
         # custom: nc.colorPair 1 # black
@@ -38,7 +63,17 @@ module.exports = class GUI
         @win.refresh()
 
     @appendLine: (message, attrs, skipBuffer = false) ->
-        @outputBuffer.push message if not skipBuffer
+        # there must be a more elegant way to do this
+        bufferMessage = message.split('').map (c, k) ->
+            if message.charCodeAt(k) >= 10 then c else '[char:' + message.charCodeAt(k) + ']'
+        bufferMessage = bufferMessage.join ''
+
+        d = new Date()
+        logString = [d.getShortMonthName(), d.getDay(), d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds(), 'client', 'test'].join(' ')
+        bufferMessage = logString + ': ' + bufferMessage
+
+        @outputBuffer.push bufferMessage if not skipBuffer
+
         {cury, curx} = @win
         @win.scroll 1
         @win.cursor @win.height - 3, 0
@@ -54,7 +89,6 @@ module.exports = class GUI
     @appendGroupedLine: (messages) ->
         return if typeof messages isnt 'object'
         pointer = 0
-
 
     @updateHeader: (header, style, clear = true, posy = 0, posx = 0) ->
         {cury, curx} = @win
@@ -88,12 +122,12 @@ module.exports = class GUI
 
     @saveBuffer: (exitAfterSave = false) =>
         return if @savingBuffer is true
-        @appendLine 'Log length: ' + @outputBuffer.length, null, true
         return if not @outputBuffer.length
         @savingBuffer = true
         @appendLine 'Saving output log...', null, true
 
-        fs.appendFileSync @outputFileName, @outputBuffer.join '\n'
+        fs.appendFileSync @outputFileName, @outputBuffer.join('\r\n') + '\r\n'
+        # @logStream.write @outputBuffer.join '\n'
 
         @outputBuffer.length = 0
         @appendLine 'Saved log', null, true

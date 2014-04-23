@@ -19,10 +19,10 @@ module.exports = class Input
             customColor = @GUI.colors.custom if nc.hasColors
             @GUI.appendLine @GUI.win.inbuffer, customColor
 
-            @GUI.headers.status.msg = 'Status: running'
+            @GUI.headers.status.msg = 'Status: running' if @GUI.headers?.status?.msg?
 
-            if msg is 'status'
-                widgets.MessageBox 'Everything is probably broken because of this'
+            if cmd is 'exit'
+                @GUI.saveBuffer true
 
             @GUI.win.inbuffer = ''
             @GUI.win.cursor @GUI.win.height - 1, 0
@@ -43,7 +43,7 @@ module.exports = class Input
             else
                 @GUI.win.addch i
 
-        @GUI.headers.status.msg = 'Status: typing' if @GUI.win.inbuffer
+        @GUI.headers.status.msg = 'Status: typing' if @GUI.win.inbuffer and @GUI.headers?.status?.msg?
 
         # setHeaders i + ' === ' + nc.keys.DEL
         @GUI.win.refresh()

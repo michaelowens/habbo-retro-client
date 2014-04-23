@@ -3,14 +3,6 @@ SocketClient = require './Client/Socket'
 Input = require './Client/Input'
 GUI = require './Client/GUI'
 
-saveAndExit = -> GUI.saveBuffer true
-
-process.on 'uncaughtException', (err) ->
-    GUI.outputBuffer.push err.stack
-    saveAndExit()
-process.on 'SIGTERM', saveAndExit
-process.on 'SIGINT', saveAndExit
-
 logo = """ _    _  ____  _      ____
  | |__| |/ __ \\| |    / __ \\
  |  __  | |__| | |___| |__| |

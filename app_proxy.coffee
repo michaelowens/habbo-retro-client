@@ -6,14 +6,7 @@ fs = require 'fs'
 net = require 'net'
 exec = require('child_process').exec
 GUI = require './Client/GUI'
-
-saveAndExit = -> GUI.saveBuffer true
-
-process.on 'uncaughtException', (err) ->
-    GUI.outputBuffer.push err.stack
-    saveAndExit()
-process.on 'SIGTERM', saveAndExit
-process.on 'SIGINT', saveAndExit
+Input = require './Client/Input'
 
 logo = """ _    _  ____  _      ____
  | |__| |/ __ \\| |    / __ \\
@@ -24,8 +17,20 @@ GUI.init()
 GUI.headers =
     title:
         msg: logo
+GUI.drawHeaders()
+
+# i = 1
+looper = ->
+    GUI.drawHeaders()
+    l = setTimeout ->
+        looper()
+    , 1000
+
+looper()
 
 webClient = new WebClient
+
+Input.setGUI GUI
 
 # Client
 webClient.login (err, httpResponse, body) ->
@@ -50,7 +55,7 @@ net.createServer (socket) ->
         socket.write d
 
     server.on 'end', ->
-        GUI.appendLine('closed');
+        GUI.appendLine 'closed'
 
     socket.on 'data', (d) ->
         GUI.appendLine '[client > server] ' + d.toString()
